@@ -1,0 +1,175 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema universidad
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema universidad
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `universidad` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+USE `universidad` ;
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Estudiantes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Estudiantes` (
+  `carnet` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  `apelldios` VARCHAR(100) NULL COMMENT '',
+  `direccion` VARCHAR(45) NULL COMMENT '',
+  `telefono` VARCHAR(45) NULL COMMENT '',
+  PRIMARY KEY (`carnet`)  COMMENT '')
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Grado_Academico`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Grado_Academico` (
+  `idNivel` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  PRIMARY KEY (`idNivel`)  COMMENT '')
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Carrera`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Carrera` (
+  `idCarrera` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  `Grado_Academico_idNivel` INT NOT NULL COMMENT '',
+  PRIMARY KEY (`idCarrera`, `Grado_Academico_idNivel`)  COMMENT '',
+  INDEX `fk_Carrera_Grado_Academico_idx` (`Grado_Academico_idNivel` ASC)  COMMENT '',
+  CONSTRAINT `fk_Carrera_Grado_Academico`
+    FOREIGN KEY (`Grado_Academico_idNivel`)
+    REFERENCES `universidad`.`Grado_Academico` (`idNivel`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Profesor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Profesor` (
+  `carnet` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  `apellidos` VARCHAR(45) NULL COMMENT '',
+  `direccion` VARCHAR(45) NULL COMMENT '',
+  `telefono` VARCHAR(45) NULL COMMENT '',
+  PRIMARY KEY (`carnet`)  COMMENT '')
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Curso`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Curso` (
+  `idCurso` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  `Carrera_idCarrera` INT NOT NULL COMMENT '',
+  `Carrera_Grado_Academico_idNivel` INT NOT NULL COMMENT '',
+  PRIMARY KEY (`idCurso`, `Carrera_idCarrera`, `Carrera_Grado_Academico_idNivel`)  COMMENT '',
+  INDEX `fk_Curso_Carrera1_idx` (`Carrera_idCarrera` ASC, `Carrera_Grado_Academico_idNivel` ASC)  COMMENT '',
+  CONSTRAINT `fk_Curso_Carrera1`
+    FOREIGN KEY (`Carrera_idCarrera` , `Carrera_Grado_Academico_idNivel`)
+    REFERENCES `universidad`.`Carrera` (`idCarrera` , `Grado_Academico_idNivel`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Horario`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Horario` (
+  `idHorario` INT NOT NULL COMMENT '',
+  `dia` VARCHAR(45) NULL COMMENT '',
+  `periodo` VARCHAR(45) NULL COMMENT '',
+  PRIMARY KEY (`idHorario`)  COMMENT '')
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Aula`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Aula` (
+  `idAula` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  PRIMARY KEY (`idAula`)  COMMENT '')
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`clase`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`clase` (
+  `idclase` INT NOT NULL COMMENT '',
+  `nombre` VARCHAR(45) NULL COMMENT '',
+  `Profesor_carnet` INT NOT NULL COMMENT '',
+  `Curso_idCurso` INT NOT NULL COMMENT '',
+  `Horario_idHorario` INT NOT NULL COMMENT '',
+  `Aula_idAula` INT NOT NULL COMMENT '',
+  PRIMARY KEY (`idclase`, `Profesor_carnet`, `Curso_idCurso`, `Horario_idHorario`, `Aula_idAula`)  COMMENT '',
+  INDEX `fk_clase_Profesor1_idx` (`Profesor_carnet` ASC)  COMMENT '',
+  INDEX `fk_clase_Curso1_idx` (`Curso_idCurso` ASC)  COMMENT '',
+  INDEX `fk_clase_Horario1_idx` (`Horario_idHorario` ASC)  COMMENT '',
+  INDEX `fk_clase_Aula1_idx` (`Aula_idAula` ASC)  COMMENT '',
+  CONSTRAINT `fk_clase_Profesor1`
+    FOREIGN KEY (`Profesor_carnet`)
+    REFERENCES `universidad`.`Profesor` (`carnet`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_clase_Curso1`
+    FOREIGN KEY (`Curso_idCurso`)
+    REFERENCES `universidad`.`Curso` (`idCurso`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_clase_Horario1`
+    FOREIGN KEY (`Horario_idHorario`)
+    REFERENCES `universidad`.`Horario` (`idHorario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_clase_Aula1`
+    FOREIGN KEY (`Aula_idAula`)
+    REFERENCES `universidad`.`Aula` (`idAula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `universidad`.`Estudiantes_has_clase`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `universidad`.`Estudiantes_has_clase` (
+  `Estudiantes_carnet` INT NOT NULL COMMENT '',
+  `clase_idclase` INT NOT NULL COMMENT '',
+  `clase_Profesor_carnet` INT NOT NULL COMMENT '',
+  `clase_Curso_idCurso` INT NOT NULL COMMENT '',
+  `clase_Horario_idHorario` INT NOT NULL COMMENT '',
+  `clase_Aula_idAula` INT NOT NULL COMMENT '',
+  PRIMARY KEY (`Estudiantes_carnet`, `clase_idclase`, `clase_Profesor_carnet`, `clase_Curso_idCurso`, `clase_Horario_idHorario`, `clase_Aula_idAula`)  COMMENT '',
+  INDEX `fk_Estudiantes_has_clase_clase1_idx` (`clase_idclase` ASC, `clase_Profesor_carnet` ASC, `clase_Curso_idCurso` ASC, `clase_Horario_idHorario` ASC, `clase_Aula_idAula` ASC)  COMMENT '',
+  INDEX `fk_Estudiantes_has_clase_Estudiantes1_idx` (`Estudiantes_carnet` ASC)  COMMENT '',
+  CONSTRAINT `fk_Estudiantes_has_clase_Estudiantes1`
+    FOREIGN KEY (`Estudiantes_carnet`)
+    REFERENCES `universidad`.`Estudiantes` (`carnet`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Estudiantes_has_clase_clase1`
+    FOREIGN KEY (`clase_idclase` , `clase_Profesor_carnet` , `clase_Curso_idCurso` , `clase_Horario_idHorario` , `clase_Aula_idAula`)
+    REFERENCES `universidad`.`clase` (`idclase` , `Profesor_carnet` , `Curso_idCurso` , `Horario_idHorario` , `Aula_idAula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

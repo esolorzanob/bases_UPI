@@ -1,0 +1,5 @@
+select a.first_name as FirstName, a.last_name as LastName, f.title as FilmName
+
+from actor a, film f, film_actor fa
+
+where a.actor_id = fa.actor_id and f.film_id = fa.film_id;
