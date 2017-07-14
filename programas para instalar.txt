@@ -1,0 +1,5 @@
+MySQL Workbench
+https://dev.mysql.com/downloads/workbench/
+
+Xammp
+https://www.apachefriends.org/download.html
